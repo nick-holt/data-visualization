@@ -22,7 +22,7 @@ require(grid)
 ggplot(dat.c.p.m, aes(x = factor(condition), y = value, fill = variable)) + 
 
   # need to set custom whisker caps, position_dodge(width = 0.75) sets correct errorbar spacing for 3 measures per factor level
-  stat_boxplot(geom = 'errorbar',	stat_params = list(width = 0.5), position = position_dodge(width = 0.75)) + 
+  stat_boxplot(geom = 'errorbar', stat_params = list(width = 0.5), position = position_dodge(width = 0.75)) + 
   
   geom_boxplot() +
   theme_classic() + 
