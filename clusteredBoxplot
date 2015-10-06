@@ -1,21 +1,43 @@
-setwd("C:/Users/User_Name/Desktop/RData")
+setwd("C:/Users/User_Name/Desktop/RData") 
 dat.c<-read.csv("Data.csv", header = TRUE)
-dat.c.p<-subset(dat.c, select = c("Fam", "Non.Causal", "Causal", "Condition"))
-library(reshape)
-dat.c.p.m<-melt(dat.c.p, id = c("Condition"), measured = c("Fam", "Non.Causal", "Causal"))
-library(ggplot2)
-require(grid)
+
+# only four columns are needed from the larger dataset for the plot
+dat.c.p<-subset(dat.c, select = c("measure.1", "measure.2", "measure.3", "condition")) 
+
+# data needs to be reformatted into long form
+library(reshape) 
+dat.c.p.m<-melt(dat.c.p, id = c("condition"), measured = c("measure.1", "measure.2", "measure.3")) 
+
+# need custom font styles for the plot
 bold.text.12<-element_text(size = 12, face = "bold")
 bold.text.16<-element_text(size = 16, face = "bold")
-x.grp.labs<-c("ASM", "PSM", "ANI", "CTRL")
-leg.labs<-c("Familiar", "NNC", "Novel")
-ggplot(dat.c.p.m, aes(x = factor(Condition), y = value, fill = variable)) + 
+
+# need to set custom labels for groups on the x axis and names in the legend
+x.grp.labs<-c("cond1", "cond2", "cond3", "cond4")
+leg.labs<-c("measure1.label", "measure2.label", "measure3.label")
+
+library(ggplot2)
+require(grid)
+ggplot(dat.c.p.m, aes(x = factor(condition), y = value, fill = variable)) + 
+
+  # need to set custom whisker caps, position_dodge(width = 0.75) sets correct errorbar spacing for 3 measures per factor level
   stat_boxplot(geom = 'errorbar',	stat_params = list(width = 0.5), position = position_dodge(width = 0.75)) + 
+  
   geom_boxplot() +
   theme_classic() + 
-  labs(x = "Condition", y = "Looking Time (s)") + 
+  labs(x = "Factor", y = "Y Measurement Name") + 
+  
+  # ggplot2's default axis title spacing looks awful. 
+  # use vjust to clean up spacing. 
+  # custom spacing places text outside margins so set custom margin values with plot.margin.
   theme(axis.text = bold.text.12, axis.title = bold.text.16, axis.title.x = element_text(vjust=-1.5),	
     axis.title.y = element_text(vjust=3), axis.line = element_line(size = 1), plot.margin = unit(c(1,1,2,2),"lines")) +
-  scale_fill_discrete("Test Trials", labels = leg.labs) + 
+  
+  # customize the legend for improved readability
+  scale_fill_discrete("Test Trials", labels = leg.labs) +
+  
+  # group 4 is the control group so we need to use limits to specify custom group ordering along x axis
   scale_x_discrete(labels = x.grp.labs, limits = c(4, 1, 2, 3))
+
+# specifiy custom dimensions for exporting as image
 ggsave("cdsBP.png", width = 10, height = 6)
