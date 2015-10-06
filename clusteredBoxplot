@@ -1,0 +1,21 @@
+setwd("C:/Users/User_Name/Desktop/RData")
+dat.c<-read.csv("Data.csv", header = TRUE)
+dat.c.p<-subset(dat.c, select = c("Fam", "Non.Causal", "Causal", "Condition"))
+library(reshape)
+dat.c.p.m<-melt(dat.c.p, id = c("Condition"), measured = c("Fam", "Non.Causal", "Causal"))
+library(ggplot2)
+require(grid)
+bold.text.12<-element_text(size = 12, face = "bold")
+bold.text.16<-element_text(size = 16, face = "bold")
+x.grp.labs<-c("ASM", "PSM", "ANI", "CTRL")
+leg.labs<-c("Familiar", "NNC", "Novel")
+ggplot(dat.c.p.m, aes(x = factor(Condition), y = value, fill = variable)) + 
+  stat_boxplot(geom = 'errorbar',	stat_params = list(width = 0.5), position = position_dodge(width = 0.75)) + 
+  geom_boxplot() +
+  theme_classic() + 
+  labs(x = "Condition", y = "Looking Time (s)") + 
+  theme(axis.text = bold.text.12, axis.title = bold.text.16, axis.title.x = element_text(vjust=-1.5),	
+    axis.title.y = element_text(vjust=3), axis.line = element_line(size = 1), plot.margin = unit(c(1,1,2,2),"lines")) +
+  scale_fill_discrete("Test Trials", labels = leg.labs) + 
+  scale_x_discrete(labels = x.grp.labs, limits = c(4, 1, 2, 3))
+ggsave("cdsBP.png", width = 10, height = 6)
